@@ -13,20 +13,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── Design tokens (validated categorical + status palette, light surface) ────
-INK_PRIMARY = "#0b0b0b"
-INK_SECONDARY = "#52514e"
-INK_MUTED = "#898781"
-SURFACE = "#fcfcfb"
-GRIDLINE = "#e1e0d9"
-BASELINE = "#c3c2b7"
+# ─── Design tokens (validated categorical + status palette, dark surface) ─────
+INK_PRIMARY = "#fafafa"
+INK_SECONDARY = "#c9d1d9"
+INK_MUTED = "#8b949e"
+SURFACE = "#161b22"
+GRIDLINE = "#30363d"
+BASELINE = "#484f58"
 
-COLOR_SURF = "#2a78d6"       # categorical slot 1 — blue
-COLOR_ULTIMATE = "#eb6834"   # categorical slot 2 — orange
+COLOR_SURF = "#3987e5"       # categorical slot 1 — blue (dark step)
+COLOR_ULTIMATE = "#d95926"   # categorical slot 2 — orange (dark step)
 
 STATUS_GOOD = "#0ca30c"
 STATUS_WARNING_BG = "#fab219"
-STATUS_WARNING_TEXT = "#8a5a08"   # darkened for legible text-on-light
+STATUS_WARNING_TEXT = "#fab219"   # dark surface gives this step 9.5:1 contrast, no darkening needed
 STATUS_CRITICAL = "#d03b3b"
 
 FONT_FAMILY = "system-ui, -apple-system, 'Segoe UI', sans-serif"
@@ -36,10 +36,10 @@ st.markdown(f"""
 <style>
     .metric-card {{
         background: {SURFACE};
-        border: 1px solid rgba(11,11,11,0.10);
+        border: 1px solid rgba(255,255,255,0.10);
         border-radius: 8px;
         padding: 20px 22px;
-        box-shadow: 0 1px 3px rgba(11,11,11,0.06);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.35);
         margin-bottom: 14px;
     }}
     .metric-card h2, .metric-card h3 {{
@@ -99,7 +99,7 @@ st.markdown(f"""
     }}
     div[data-testid="stMetric"] {{
         background: {SURFACE};
-        border: 1px solid rgba(11,11,11,0.10);
+        border: 1px solid rgba(255,255,255,0.10);
         border-radius: 8px;
         padding: 12px 14px;
     }}
@@ -116,13 +116,13 @@ st.markdown(f"""
 def apply_layout(fig, **overrides):
     """Shared Tableau-style chart chrome: light surface, hairline grid, muted axis ink."""
     layout_kwargs = dict(
-        template="plotly_white",
+        template="plotly_dark",
         paper_bgcolor=SURFACE,
         plot_bgcolor=SURFACE,
         font=dict(family=FONT_FAMILY, color=INK_SECONDARY, size=13),
         title=dict(font=dict(family=FONT_FAMILY, color=INK_PRIMARY, size=16)),
         margin=dict(t=56, l=10, r=10, b=10),
-        hoverlabel=dict(bgcolor="white", font=dict(family=FONT_FAMILY, color=INK_PRIMARY)),
+        hoverlabel=dict(bgcolor=SURFACE, font=dict(family=FONT_FAMILY, color=INK_PRIMARY)),
     )
     layout_kwargs.update(overrides)
     fig.update_layout(**layout_kwargs)
@@ -605,7 +605,7 @@ with tab3:
     fig_heat.add_trace(go.Scatter(
         x=[cac_ultimate], y=[churn_rate],
         mode="markers+text",
-        marker=dict(size=14, color=INK_PRIMARY, symbol="x", line=dict(width=2, color="white")),
+        marker=dict(size=14, color=INK_PRIMARY, symbol="x", line=dict(width=2, color=SURFACE)),
         text=["Current"], textposition="top center",
         textfont=dict(color=INK_PRIMARY, size=12), showlegend=False
     ))
