@@ -13,6 +13,31 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Streamlit strips the reserved `embed` query param before Python ever sees it
+# (st.query_params excludes it by design), so detecting/collapsing for the
+# portfolio iframe has to happen client-side instead. This runs inside a
+# same-origin srcdoc iframe (st.components.v1.html), which can still reach the
+# real page via window.parent, checks the browser's actual URL for
+# ?embed=true, and clicks the sidebar's own collapse button once it renders —
+# giving the KPI row and charts the width instead of a 300px sidebar.
+st.components.v1.html("""
+<script>
+(function () {
+  if (!window.parent.location.search.includes('embed=true')) return;
+  let tries = 0;
+  const timer = setInterval(function () {
+    const btn = window.parent.document.querySelector('[data-testid="stSidebarCollapseButton"] button');
+    if (btn) {
+      btn.click();
+      clearInterval(timer);
+    } else if (++tries > 40) {
+      clearInterval(timer);
+    }
+  }, 100);
+})();
+</script>
+""", height=0)
+
 # ─── Design tokens (validated categorical + status palette, dark surface) ─────
 INK_PRIMARY = "#fafafa"
 INK_SECONDARY = "#c9d1d9"
