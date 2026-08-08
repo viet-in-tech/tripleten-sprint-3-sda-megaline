@@ -1,0 +1,33 @@
+name: Keep Streamlit app awake
+
+# Streamlit Community Cloud puts apps to sleep after a stretch of no visitor
+# traffic. A plain curl only fetches the static HTML shell and never opens
+# the WebSocket session the app actually runs on, so it doesn't reliably
+# count as activity. This drives a real headless-browser visit instead —
+# and if the app is already asleep, clicks the wake-up button so it
+# self-heals rather than just failing quietly.
+#
+# This is a workaround against undocumented free-tier behavior, not an
+# official guarantee — if Streamlit changes how inactivity is measured,
+# this may need adjusting.
+
+on:
+  schedule:
+    - cron: "0 12 */3 * *" # every 3 days at 12:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Playwright
+        run: |
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Visit the app (and wake it if asleep)
+        run: node .github/workflows/keep-alive.js
